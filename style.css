@@ -1,0 +1,193 @@
+/* ==== Global Styles ==== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  background: #f2f7fb;
+  color: #10344c;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==== Layout ==== */
+.site-header,
+.site-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
+  background: #0a4e9b;
+  color: #ffffff;
+}
+
+.site-header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.site-header p {
+  max-width: 700px;
+  margin: 0.5rem auto 0;
+  line-height: 1.4;
+}
+
+.highlight {
+  color: #ffd200;
+  font-weight: 700;
+}
+
+.game-wrapper {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 1.5rem 1rem 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  gap: 1.5rem;
+}
+
+.info-panel {
+  flex: 1 1 260px;
+  min-width: 250px;
+}
+
+.game-area {
+  flex: 2 1 280px;
+  min-width: 280px;
+}
+
+/* ==== Scoreboard ==== */
+.score-board {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.score-item {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  flex: 1 1 120px;
+  min-width: 120px;
+}
+
+.label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6a8aa3;
+  margin-bottom: 0.25rem;
+}
+
+.value {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* ==== Buttons ==== */
+.buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.btn {
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: 0.1s;
+  font-weight: 600;
+}
+
+.btn.primary {
+  background: #ffd200;
+  color: #10344c;
+}
+
+.btn.secondary {
+  background: #ffffff;
+  color: #0a4e9b;
+  border: 1px solid #d0e1f1;
+}
+
+/* ==== Game Grid ==== */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(80px, 1fr));
+  gap: 0.75rem;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.spot {
+  background: #ffffff;
+  border-radius: 1rem;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #d0e1f1;
+  cursor: pointer;
+  font-size: 2rem;
+  transition: 0.1s ease;
+}
+
+.spot.good {
+  background: #ffd200;
+  border-color: #e3b700;
+}
+
+.spot.bad {
+  background: #7b4b32;
+  border-color: #5b3722;
+  color: #f8f2ec;
+}
+
+.spot.good::before {
+  content: "🛢️";
+}
+
+.spot.bad::before {
+  content: "⚠️";
+}
+
+.spot.empty::before {
+  content: "💧";
+  opacity: 0.35;
+}
+
+/* ==== Confetti ==== */
+#confetti-container {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  animation: confetti-fall 1.6s linear forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(-10vh) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(110vh) rotate(360deg);
+  }
+}
