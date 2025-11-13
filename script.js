@@ -1,151 +1,248 @@
-// ===== Water Quest Game Logic =====
+// -----------------------------
+// BASIC GAME SETTINGS
+// -----------------------------
 
-const scoreElement = document.getElementById("score");
-const timeElement = document.getElementById("time");
-const messageElement = document.getElementById("message");
-const startBtn = document.getElementById("startBtn");
-const resetBtn = document.getElementById("resetBtn");
-const spots = document.querySelectorAll(".spot");
-const confettiContainer = document.getElementById("confetti-container");
+// Different settings for each difficulty mode
+const difficultySettings = {
+  easy: {
+    label: "Easy",
+    targetScore: 8,      // how many drops you need to win
+    time: 30,            // seconds
+    spawnRate: 900       // how often a new drop appears (milliseconds)
+  },
+  normal: {
+    label: "Normal",
+    targetScore: 12,
+    time: 25,
+    spawnRate: 700
+  },
+  hard: {
+    label: "Hard",
+    targetScore: 18,
+    time: 20,
+    spawnRate: 550
+  }
+};
 
+// -----------------------------
+// SELECT ELEMENTS FROM THE PAGE
+// -----------------------------
+
+const difficultyButtons = document.querySelectorAll(".difficulty-button");
+const difficultyLabel = document.getElementById("difficulty-label");
+const goalDisplay = document.getElementById("goal-display");
+const scoreDisplay = document.getElementById("score-display");
+const timerDisplay = document.getElementById("timer-display");
+const message = document.getElementById("message");
+const startButton = document.getElementById("start-button");
+const gameArea = document.getElementById("game-area");
+
+// -----------------------------
+// GAME STATE (THINGS THAT CHANGE)
+// -----------------------------
+
+let currentDifficultyKey = "easy";
 let score = 0;
-let timeLeft = 30;
-let gameActive = false;
-let countdownTimerId = null;
-let canTimerId = null;
+let timeLeft = difficultySettings[currentDifficultyKey].time;
+let gameIsActive = false;
 
-// Update displays
-function updateScore() {
-  scoreElement.textContent = score;
+let spawnIntervalId = null;
+let timerIntervalId = null;
+
+// -----------------------------
+// HELPER: UPDATE STATS TEXT
+// -----------------------------
+
+function updateStatsDisplay() {
+  const settings = difficultySettings[currentDifficultyKey];
+  difficultyLabel.textContent = settings.label;
+  goalDisplay.textContent = `${settings.targetScore} drops`;
+  scoreDisplay.textContent = score.toString();
+  timerDisplay.textContent = `${timeLeft}s`;
 }
 
-function updateTime() {
-  timeElement.textContent = timeLeft + "s";
-}
+// -----------------------------
+// SET DIFFICULTY
+// -----------------------------
 
-function clearSpots() {
-  spots.forEach((spot) => {
-    spot.classList.remove("good", "bad", "empty");
+function setDifficulty(newDifficultyKey) {
+  if (gameIsActive) {
+    // You can only change difficulty when the game is NOT running
+    return;
+  }
+
+  currentDifficultyKey = newDifficultyKey;
+  const settings = difficultySettings[currentDifficultyKey];
+
+  // Highlight the active button
+  difficultyButtons.forEach((btn) => {
+    const btnDifficulty = btn.getAttribute("data-difficulty");
+    btn.classList.toggle("active", btnDifficulty === currentDifficultyKey);
   });
+
+  // Reset score and timer for the new difficulty
+  score = 0;
+  timeLeft = settings.time;
+  message.textContent = `You selected ${settings.label}. Press "Start Game" to begin.`;
+
+  // Clear any remaining drops just in case
+  clearGameArea();
+
+  updateStatsDisplay();
 }
 
-function showRandomCan() {
-  clearSpots();
-  const randomIndex = Math.floor(Math.random() * spots.length);
-  const randomSpot = spots[randomIndex];
-  const isGood = Math.random() < 0.7;
+// -----------------------------
+// CLEAR GAME AREA (REMOVE DROPS)
+// -----------------------------
 
-  if (isGood) randomSpot.classList.add("good");
-  else randomSpot.classList.add("bad");
+function clearGameArea() {
+  // Remove all elements with the class "drop"
+  const drops = gameArea.querySelectorAll(".drop");
+  drops.forEach((drop) => drop.remove());
 }
 
-function startCountdown() {
-  countdownTimerId = setInterval(() => {
-    timeLeft -= 1;
-    updateTime();
-    if (timeLeft <= 0) endGame();
+// -----------------------------
+// START GAME
+// -----------------------------
+
+function startGame() {
+  if (gameIsActive) {
+    return; // Already playing
+  }
+
+  const settings = difficultySettings[currentDifficultyKey];
+
+  gameIsActive = true;
+  score = 0;
+  timeLeft = settings.time;
+  updateStatsDisplay();
+
+  message.textContent =
+    "Game started! Click as many blue water drops as you can before time runs out.";
+
+  // Disable difficulty buttons while game is running
+  difficultyButtons.forEach((btn) => {
+    btn.disabled = true;
+  });
+  startButton.disabled = true;
+
+  clearGameArea();
+
+  // Start spawning drops
+  spawnIntervalId = setInterval(createDrop, settings.spawnRate);
+
+  // Start timer that counts down every second
+  timerIntervalId = setInterval(() => {
+    timeLeft--;
+    updateStatsDisplay();
+
+    if (timeLeft <= 0) {
+      endGame();
+    }
   }, 1000);
 }
 
-function startCanMovement() {
-  showRandomCan();
-  canTimerId = setInterval(showRandomCan, 800);
-}
+// -----------------------------
+// END GAME
+// -----------------------------
 
 function endGame() {
-  gameActive = false;
-  startBtn.disabled = false;
-  clearInterval(countdownTimerId);
-  clearInterval(canTimerId);
-  clearSpots();
+  if (!gameIsActive) return;
 
-  let finalMessage = "";
-  if (score >= 100) {
-    finalMessage =
-      "Amazing! You collected enough clean water for a whole community! 🎉";
-    launchConfetti();
-  } else if (score >= 50) {
-    finalMessage = "Good job! You helped several families get clean water!";
+  gameIsActive = false;
+
+  const settings = difficultySettings[currentDifficultyKey];
+
+  // Stop timer & drop spawns
+  clearInterval(spawnIntervalId);
+  clearInterval(timerIntervalId);
+  spawnIntervalId = null;
+  timerIntervalId = null;
+
+  // Remove any leftover drops
+  clearGameArea();
+
+  // Check win or lose
+  if (score >= settings.targetScore) {
+    message.textContent =
+      `Amazing! You collected ${score} drops and reached the goal for the ${settings.label} level. ` +
+      "Imagine the impact of bringing clean water to a whole community!";
   } else {
-    finalMessage = "Keep trying! Every clean can helps someone!";
+    message.textContent =
+      `You collected ${score} drops, but the goal was ${settings.targetScore}. ` +
+      "You're close—try again and see if you can beat your best score!";
   }
 
-  messageElement.textContent = finalMessage;
+  // Re-enable controls
+  difficultyButtons.forEach((btn) => {
+    btn.disabled = false;
+  });
+  startButton.disabled = false;
 }
 
-function resetGame() {
-  gameActive = false;
-  clearInterval(countdownTimerId);
-  clearInterval(canTimerId);
+// -----------------------------
+// CREATE A SINGLE WATER DROP
+// -----------------------------
 
-  score = 0;
-  timeLeft = 30;
-  updateScore();
-  updateTime();
-  clearSpots();
-  clearConfetti();
+function createDrop() {
+  if (!gameIsActive) return;
 
-  messageElement.textContent =
-    "Game reset! Press Start Game to play again.";
-  startBtn.disabled = false;
-}
+  const drop = document.createElement("div");
+  drop.classList.add("drop");
 
-function launchConfetti() {
-  clearConfetti();
-  const colors = ["#ffd200", "#0a4e9b", "#ffffff", "#ff8a00"];
+  // Get the size of the game area so we can place the drop inside it
+  const areaRect = gameArea.getBoundingClientRect();
 
-  for (let i = 0; i < 60; i++) {
-    const piece = document.createElement("div");
-    piece.classList.add("confetti-piece");
+  // Keep some padding so drops don't get cut off at the edges
+  const padding = 10;
+  const maxX = areaRect.width - 40 - padding;
+  const maxY = areaRect.height - 80 - padding; // leave space at bottom
 
-    piece.style.backgroundColor =
-      colors[Math.floor(Math.random() * colors.length)];
-    piece.style.left = Math.random() * 100 + "vw";
-    piece.style.animationDelay = Math.random() * 0.8 + "s";
+  // Random x and y positions inside the game area
+  const x = Math.random() * maxX + padding;
+  const y = Math.random() * maxY + padding;
 
-    confettiContainer.appendChild(piece);
-    setTimeout(() => piece.remove(), 2000);
-  }
-}
+  drop.style.left = `${x}px`;
+  drop.style.top = `${y}px`;
 
-function clearConfetti() {
-  confettiContainer.innerHTML = "";
-}
+  // When the player clicks the drop:
+  drop.addEventListener("click", () => {
+    if (!gameIsActive) return;
 
-// Click behavior
-spots.forEach((spot) => {
-  spot.addEventListener("click", () => {
-    if (!gameActive) return;
-    if (spot.classList.contains("good")) {
-      score += 10;
-      updateScore();
-      messageElement.textContent = "Nice! Clean water collected! 💧";
-      clearSpots();
-    } else if (spot.classList.contains("bad")) {
-      score -= 5;
-      if (score < 0) score = 0;
-      updateScore();
-      messageElement.textContent = "Yikes! That was dirty water!";
-      clearSpots();
+    // Increase score by 1 each time you click a drop
+    score++;
+    updateStatsDisplay();
+
+    // Remove the drop from the page
+    drop.remove();
+  });
+
+  // Add the drop to the game area
+  gameArea.appendChild(drop);
+
+  // Auto-remove the drop after a few seconds so the screen doesn't fill up
+  setTimeout(() => {
+    if (drop.parentElement) {
+      drop.remove();
     }
+  }, 2600);
+}
+
+// -----------------------------
+// EVENT LISTENERS
+// -----------------------------
+
+// Change difficulty when clicking those buttons
+difficultyButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const level = btn.getAttribute("data-difficulty");
+    setDifficulty(level);
   });
 });
 
-// Start
-startBtn.addEventListener("click", () => {
-  if (gameActive) return;
-  resetGame();
-  gameActive = true;
-  startBtn.disabled = true;
+// Start game button
+startButton.addEventListener("click", startGame);
 
-  messageElement.textContent =
-    "Game on! Tap the yellow cans quickly!";
-  startCountdown();
-  startCanMovement();
-});
-
-// Reset
-resetBtn.addEventListener("click", resetGame);
-
-// Initialize
-resetGame();
+// Initialize the display when the page first loads
+setDifficulty("easy");
+updateStatsDisplay();
