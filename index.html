@@ -1,29 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Water Drop Game (Simple Working Version)</title>
+  <title>charity: water – Water Quest Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Clean, modern font -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+
   <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-  <h1>Water Drop Game — Simple Working Version</h1>
+  <header class="site-header">
+    <div class="logo-badge">charity: water (fan project)</div>
+    <h1 class="main-title">Water Quest</h1>
+    <p class="subtitle">
+      Catch as many clean water drops as you can before time runs out. Each drop represents
+      people getting closer to safe, clean water.
+    </p>
+  </header>
 
-  <div id="controls">
-    <button id="easy">Easy</button>
-    <button id="normal">Normal</button>
-    <button id="hard">Hard</button>
-    <button id="start">Start Game</button>
-  </div>
+  <main class="layout">
+    <!-- LEFT SIDE: instructions + stats -->
+    <section class="info-panel">
+      <h2>How to Play</h2>
+      <ol class="instructions-list">
+        <li>Choose a difficulty level.</li>
+        <li>Click <strong>Start Game</strong>.</li>
+        <li>Click the blue water drops that appear in the game area.</li>
+        <li>Try to reach or beat the goal before time runs out!</li>
+      </ol>
 
-  <p>Difficulty: <span id="difficulty">Easy</span></p>
-  <p>Goal: <span id="goal">5</span></p>
-  <p>Score: <span id="score">0</span></p>
-  <p>Time Left: <span id="time">20</span>s</p>
+      <h3>Difficulty</h3>
+      <div id="controls" class="controls">
+        <div class="difficulty-buttons">
+          <button id="easy" class="difficulty-button active">Easy</button>
+          <button id="normal" class="difficulty-button">Normal</button>
+          <button id="hard" class="difficulty-button">Hard</button>
+        </div>
+        <button id="start" class="primary-button">Start Game</button>
+      </div>
 
-  <p id="message">Press Start Game.</p>
+      <section class="stats">
+        <div class="stat-row">
+          <span class="stat-label">Difficulty:</span>
+          <span id="difficulty">easy</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Goal:</span>
+          <span id="goal">5</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Score:</span>
+          <span id="score">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Time left:</span>
+          <span id="time">20</span>s
+        </div>
+      </section>
 
-  <div id="game-area"></div>
+      <p id="message" class="message">
+        Press Start Game.
+      </p>
+
+      <section class="mission">
+        <h3>Why clean water?</h3>
+        <p>
+          charity: water works to bring safe, clean drinking water to communities around the
+          world. Water affects health, education, and opportunity.
+        </p>
+        <p>
+          This small game is a playful reminder that every “drop” matters. In real life,
+          reliable clean water can change the course of someone’s day, year, and future.
+        </p>
+      </section>
+    </section>
+
+    <!-- RIGHT SIDE: game area -->
+    <section class="game-panel">
+      <h2 class="game-panel-title">Catch the clean water drops!</h2>
+      <div id="game-area">
+        <!-- Blue “drops” appear here during the game -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>
+      Learn more about the real organization that inspired this project:
+      <a href="https://www.charitywater.org/" target="_blank" rel="noopener noreferrer">charity: water</a>
+    </p>
+    <p>
+      <a href="https://www.charitywater.org/donate" target="_blank" rel="noopener noreferrer">Donate</a>
+      &bull;
+      <a href="https://www.charitywater.org/about" target="_blank" rel="noopener noreferrer">About</a>
+      &bull;
+      <a href="https://www.charitywater.org/projects" target="_blank" rel="noopener noreferrer">Projects</a>
+    </p>
+  </footer>
 
   <script src="script.js"></script>
 </body>
