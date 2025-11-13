@@ -1,4 +1,4 @@
-// ✔ VERY SIMPLE WORKING GAME
+// Simple but working game logic with difficulty levels
 
 let difficulty = "easy";
 let goal = 5;
@@ -43,6 +43,12 @@ function setDifficulty(level) {
   timeText.textContent = timeLeft;
 
   message.textContent = "Difficulty set to " + level;
+
+  // Update button highlight
+  document.getElementById("easy").classList.remove("active");
+  document.getElementById("normal").classList.remove("active");
+  document.getElementById("hard").classList.remove("active");
+  document.getElementById(level).classList.add("active");
 }
 
 function startGame() {
@@ -51,7 +57,7 @@ function startGame() {
   timeLeft = parseInt(timeText.textContent);
   scoreText.textContent = score;
 
-  message.textContent = "Game Started! Click blue circles!";
+  message.textContent = "Game Started! Click the blue drops!";
 
   spawnInterval = setInterval(createDrop, spawnRate);
 
@@ -71,9 +77,10 @@ function endGame() {
   clearGame();
 
   if (score >= goal) {
-    message.textContent = "YOU WIN! Score: " + score;
+    message.textContent = "YOU WIN! You reached the goal with a score of " + score + ".";
   } else {
-    message.textContent = "YOU LOST. Score: " + score;
+    message.textContent =
+      "Time’s up. You scored " + score + ", but needed " + goal + ". Try again!";
   }
 }
 
@@ -101,3 +108,6 @@ function createDrop() {
 
   setTimeout(() => drop.remove(), 2000);
 }
+
+// Set initial UI for easy mode
+setDifficulty("easy");
