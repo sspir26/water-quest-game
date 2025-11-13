@@ -1,4 +1,3 @@
-/* Use the Montserrat font from index.html for all text */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -59,7 +58,7 @@ body {
   margin: 0 auto;
 }
 
-/* LEFT PANEL (INFO) */
+/* LEFT PANEL */
 
 .info-panel {
   flex: 1 1 280px;
@@ -194,7 +193,7 @@ body {
   min-height: 2.2em;
 }
 
-/* Mission block */
+/* Mission */
 
 .mission {
   margin-top: 1.1rem;
@@ -209,7 +208,7 @@ body {
   margin-bottom: 0.3rem;
 }
 
-/* RIGHT PANEL (GAME) */
+/* RIGHT PANEL */
 
 .game-panel {
   flex: 1.3 1 320px;
@@ -264,7 +263,6 @@ body {
   filter: blur(1px);
 }
 
-/* Little floating / falling animation */
 @keyframes float-drop {
   0% {
     transform: translateY(-60px) scale(0.7);
